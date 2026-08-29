@@ -3,13 +3,20 @@ import type { NextFunction, Request, Response } from "express";
 import sendResponse from "../Utils/sendResponse.js";
 
 import jwt, { type JwtPayload } from "jsonwebtoken";
+import backlistTokenModel from "../Model/backlist.mode.js";
 
 const authMiddleware = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.token;
 
     if (!token) {
-      return sendResponse(res, 401, "Authenticaiton Eroro");
+      return sendResponse(res, 401, "Token nai");
+    }
+
+    const tokenBacklist = await backlistTokenModel.findOne({ token });
+
+    if (tokenBacklist) {
+      return sendResponse(res, 401, "This token is backlisted");
     }
 
     const decoded = jwt.verify(
@@ -20,5 +27,5 @@ const authMiddleware = asyncHandler(
     next();
   },
 );
-
-export default authMiddleware;
+const userMiddleware = { authMiddleware };
+export default userMiddleware;

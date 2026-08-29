@@ -4,13 +4,11 @@ interface UserInformation {
   userName: string;
   email: string;
   password: string;
-  profileImage?: string;
+  profileImage?: string | null;
   role: "user" | "admin";
   isVerified: boolean;
   isActive: boolean;
-  lastLogin?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  lastLogin?: Date | null;
 }
 
 const userSchema = new Schema<UserInformation>(
@@ -44,6 +42,10 @@ const userSchema = new Schema<UserInformation>(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
 
     lastLogin: {

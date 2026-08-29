@@ -100,7 +100,8 @@ const userLogout = asyncHandler(async (req: Request, res: Response) => {
     token,
   });
 
-  res.clearCookie(token);
+  res.clearCookie("token");
+
   return sendResponse(res, 200, "User logout");
 });
 
@@ -109,8 +110,16 @@ const userLogout = asyncHandler(async (req: Request, res: Response) => {
  * @Route GET/ api/user/
  */
 
-const getMe = asyncHandler(async (req: Request, res: Response) => {});
+const getMe = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) {
+    return sendResponse(res, 401, "Unauthorized");
+  }
 
-const userController = { userRegister, userLogin, userLogout };
+  const user = await userModel.findById(req.user.id);
+
+  return sendResponse(res, 200, "use get succefulle fetchd", user);
+});
+
+const userController = { userRegister, userLogin, userLogout, getMe };
 
 export default userController;
