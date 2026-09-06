@@ -143,7 +143,7 @@ const interviewReportSchema = new Schema<InterviewReportSchema>(
 
     title: {
       type: String,
-      required: [true, "Job title is required"],
+      // required: [true, "Job title is required"],
     },
   },
   {

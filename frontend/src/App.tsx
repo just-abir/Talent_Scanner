@@ -4,7 +4,8 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Home from "./Pages/Home";
 import Hero from "./Pages/Hero";
-import { ProtectedRoute } from "./protectedRoute";
+import { ProtectedRoute } from "./ProtectedRoute";
+import InterviewReport from "./Pages/InterviewReport";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/home" element={<Home />} />
+          <Route path="/interviewReport" element={<InterviewReport />} />
         </Route>
       </Routes>
     </div>

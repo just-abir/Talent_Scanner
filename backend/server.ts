@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
-import invokeGeminiAi from "./src/Services/ai.services.js";
+// import invokeGeminiAi, {
+//   generateInterviewReport,
+// } from "./src/Services/ai.services.js";
 import app from "./src/app";
 import connectDB from "./src/Database/db";
+
+import { resume, selfDescription, jobDescription } from "./src/test-data.js";
 
 dotenv.config();
 
@@ -9,6 +13,8 @@ connectDB();
 console.log("Testinng ");
 
 //invokeGeminiAi();
+
+// generateInterviewReport({ resume, selfDescription, jobDescription });
 
 const PORT = process.env.PORT || 5000;
 
