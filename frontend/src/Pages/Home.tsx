@@ -1,6 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
+import { uploadInformation } from "../Api/interview.api";
+import { useNavigate } from "react-router-dom";
+import { interviewContext } from "../Context/interviewContext";
+import { useContext } from "react";
+
+export type UploadForm = {
+  resume: File;
+  jobDescription: string;
+  selfDescription: string;
+};
 
 const Home = () => {
+  const { setDetailsInfo } = useContext(interviewContext);
+  const navigate = useNavigate();
+  const [resume, setResume] = useState<File | null>(null);
+
+  const [jobDescription, setJobDescription] = useState<string>("");
+
+  const [selfDescription, setSelfDescription] = useState<string>("");
+
+  const handleSubmit = async () => {
+    if (!resume) {
+      alert("Please upload your resume");
+      return;
+    }
+    const formData = new FormData();
+
+    formData.append("resume", resume);
+    formData.append("jobDescription", jobDescription);
+    formData.append("selfDescription", selfDescription);
+
+    try {
+      const response = await uploadInformation(formData);
+      console.log("uplaod ", response);
+      setDetailsInfo(response);
+      navigate("/interview");
+    } catch (error) {
+      console.log("eror interview", error);
+    }
+  };
+
   return (
     <div>
       <div className="min-h-screen bg-gray-50 px-6 py-10">
@@ -32,6 +71,9 @@ const Home = () => {
               </div>
 
               <textarea
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                name="jobDescription"
                 placeholder="Paste the target job description here..."
                 className="h-[430px] w-full resize-none rounded-lg border border-gray-300 p-4 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:border-gray-500"
               />
@@ -63,6 +105,11 @@ const Home = () => {
 
                 {/* File Input */}
                 <input
+                  name="resume"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] ?? null;
+                    setResume(file);
+                  }}
                   id="resume"
                   type="file"
                   accept=".pdf,application/pdf"
@@ -77,6 +124,9 @@ const Home = () => {
                 </label>
 
                 <textarea
+                  name="selfDescription"
+                  value={selfDescription}
+                  onChange={(e) => setSelfDescription(e.target.value)}
                   placeholder="Tell us about yourself, your skills, experience, goals, and strengths..."
                   className="h-40 w-full resize-none rounded-lg border border-gray-300 p-4 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:border-gray-500"
                 />
@@ -101,7 +151,10 @@ const Home = () => {
               </div>
 
               {/* Generate Button */}
-              <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-900 px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800">
+              <button
+                onClick={handleSubmit}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-900 px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+              >
                 Generate Interview Report
                 <span className="text-base">→</span>
               </button>

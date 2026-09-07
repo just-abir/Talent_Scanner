@@ -2,12 +2,14 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { getMe, loginUser } from "../Api/user.api";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 export type loginForm = {
   email: string;
   password: string;
 };
 
 const Login = () => {
+  const { setUser } = useAuth();
   const navigate = useNavigate();
   const {
     register,
@@ -20,8 +22,9 @@ const Login = () => {
       const response = await loginUser(data);
       console.log("Response", response);
 
-      // const reponse2 =await getMe();
-      // console.log("response ", reponse2)
+      const reponse2 = await getMe();
+      console.log("response ", reponse2);
+      setUser(reponse2.data);
       navigate("/home");
     } catch (error) {
       console.log("hi", error);

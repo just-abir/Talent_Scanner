@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
+import { interviewContext } from "../Context/interviewContext";
 
 const InterviewReport = () => {
+  const { detailsInfo } = useContext(interviewContext);
+
+  console.log("HI", detailsInfo);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -184,7 +189,7 @@ const InterviewReport = () => {
                 Skill Gaps
               </h3>
 
-              <span className="text-xs text-gray-400">5 gaps</span>
+              <span className="text-xs text-gray-400">{0}gaps</span>
             </div>
 
             <div className="mt-4 space-y-3">

@@ -9,6 +9,7 @@ type User = {
 
 type AuthContext = {
   user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   loading: boolean;
 };
 
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <authContext.Provider value={{ user, loading }}>
+    <authContext.Provider value={{ user, setUser, loading }}>
       {children}
     </authContext.Provider>
   );
