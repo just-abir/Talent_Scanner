@@ -19,7 +19,7 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/home" element={<Home />} />
-          <Route path="/interview" element={<InterviewReport />} />
+          <Route path="/interview/:id" element={<InterviewReport />} />
         </Route>
       </Routes>
     </div>

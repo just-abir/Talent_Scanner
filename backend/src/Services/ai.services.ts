@@ -176,11 +176,89 @@ Evaluation Guidelines:
   return JSON.parse(response.text ?? "{}");
 };
 
-const invokeGeminiAi = async () => {
-  const interaction = await ai.interactions.create({
-    model: "gemini-3.5-flash-lite",
-    input: "Explain how AI works in a few words",
-  });
-};
+const tailoredCvSchema = z.object({
+  fullName: z.string(),
+  contact: z.object({
+    email: z.string().optional(),
+    phone: z.string().optional(),
+    location: z.string().optional(),
+    linkedin: z.string().optional(),
+    github: z.string().optional(),
+  }),
+  professionalSummary: z
+    .string()
+    .describe(
+      "3-4 sentence powerful ATS-friendly summary targeting the job description.",
+    ),
+  skills: z.object({
+    technicalSkills: z.array(z.string()),
+    softSkills: z.array(z.string()),
+    toolsAndFrameworks: z.array(z.string()),
+  }),
+  experience: z.array(
+    z.object({
+      role: z.string(),
+      company: z.string(),
+      duration: z.string(),
+      achievements: z
+        .array(z.string())
+        .describe(
+          "Action-verb oriented, metric-driven bullet points matching JD keywords",
+        ),
+    }),
+  ),
+  projects: z.array(
+    z.object({
+      title: z.string(),
+      technologies: z.array(z.string()),
+      description: z.array(z.string()),
+      link: z.string().optional(),
+    }),
+  ),
+  education: z.array(
+    z.object({
+      degree: z.string(),
+      institution: z.string(),
+      year: z.string(),
+    }),
+  ),
+});
 
-export default invokeGeminiAi;
+export const generateTailoredCV = async ({
+  resume,
+  selfDescription,
+  jobDescription,
+}: {
+  resume: string;
+  selfDescription: string;
+  jobDescription: string;
+}) => {
+  const prompt = `You are a professional Executive Resume Writer and ATS optimization specialist.
+Rewrite and optimize the candidate's CV so it strongly targets the Job Description while strictly staying truthful to the candidate's actual background.
+Candidate Resume:
+"""
+${resume}
+"""
+Candidate Self Description:
+"""
+${selfDescription}
+"""
+Target Job Description:
+"""
+${jobDescription}
+"""
+Instructions:
+1. Align the professional summary with the target role and core keywords from the Job Description.
+2. Highlight matching technical skills and prioritize them.
+3. Transform experience and project bullet points into high-impact (Action Verb + Context + Result/Metric) statements matching the JD requirements.
+4. Keep the output fully structured in JSON.`;
+  const response = await ai.models.generateContent({
+    model: "gemini-3.5-flash-lite",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: zodToJsonSchema(tailoredCvSchema),
+    },
+  });
+  return JSON.parse(response.text ?? "{}");
+};

@@ -6,3 +6,13 @@ export const uploadInformation = async (data: FormData) => {
   });
   return response.data;
 };
+
+export const getInterviewReportByID = async (id: string) => {
+  const response = await api.get(`/interview/${id}`);
+  return response.data;
+};
+
+export const getRecentReport = async () => {
+  const response = await api.get(`/interview/recent`);
+  return response.data;
+};

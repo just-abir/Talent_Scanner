@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import { uploadInformation } from "../Api/interview.api";
+import React, { useEffect, useState } from "react";
+import { getRecentReport, uploadInformation } from "../Api/interview.api";
 import { useNavigate } from "react-router-dom";
-import { interviewContext } from "../Context/interviewContext";
+import {
+  interviewContext,
+  type InterviewReportData,
+} from "../Context/interviewContext";
 import { useContext } from "react";
 
 export type UploadForm = {
@@ -11,13 +14,14 @@ export type UploadForm = {
 };
 
 const Home = () => {
-  const { setDetailsInfo } = useContext(interviewContext);
+  const { setDetailsInfo } = useContext(interviewContext)!;
   const navigate = useNavigate();
   const [resume, setResume] = useState<File | null>(null);
 
   const [jobDescription, setJobDescription] = useState<string>("");
 
   const [selfDescription, setSelfDescription] = useState<string>("");
+  const [recentValue, setRecentValue] = useState<InterviewReportData[]>([]);
 
   const handleSubmit = async () => {
     if (!resume) {
@@ -32,13 +36,28 @@ const Home = () => {
 
     try {
       const response = await uploadInformation(formData);
-      console.log("uplaod ", response);
-      setDetailsInfo(response);
-      navigate("/interview");
+
+      setDetailsInfo(response.data);
+      navigate(`/interview/${response.data._id}`);
     } catch (error) {
       console.log("eror interview", error);
     }
   };
+
+  useEffect(() => {
+    const recentReportShow = async () => {
+      try {
+        const response = await getRecentReport();
+        console.log("tHe Low back", response);
+        const result = response.data;
+        console.log("Rcent value Test", result);
+        setRecentValue(result || []);
+      } catch (error) {
+        console.log("recentshow error", error);
+      }
+    };
+    recentReportShow();
+  }, []);
 
   return (
     <div>
@@ -158,6 +177,21 @@ const Home = () => {
                 Generate Interview Report
                 <span className="text-base">→</span>
               </button>
+            </div>
+
+            <div>
+              {recentValue?.map((elem, id) => (
+                <div
+                  onClick={() => {
+                    navigate(`/interview/${elem._id}`);
+                  }}
+                  className="border-2 "
+                  key={id}
+                >
+                  <p>{elem.createdAt ?? "NO Date"}</p>
+                  <p>{elem.title ?? "No title now"}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

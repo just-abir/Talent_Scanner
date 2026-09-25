@@ -1,10 +1,39 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { interviewContext } from "../Context/interviewContext";
-
+import { useParams } from "react-router-dom";
+import { getInterviewReportByID } from "../Api/interview.api";
 const InterviewReport = () => {
-  const { detailsInfo } = useContext(interviewContext);
+  const { id } = useParams<{ id: string }>();
 
-  console.log("HI", detailsInfo);
+  const context = useContext(interviewContext);
+
+  console.log("InterviwReprotTest", context);
+
+  if (!context) {
+    throw new Error("Inteview context issue");
+  }
+
+  const { detailsInfo, setDetailsInfo } = context;
+
+  useEffect(() => {
+    const fetchInterviewReport = async () => {
+      if (!detailsInfo && id) {
+        try {
+          const response = await getInterviewReportByID(id);
+          const reportData = response.data;
+          console.log("Last test", reportData);
+          setDetailsInfo(reportData);
+        } catch (error) {
+          console.log("Failed to fetch interviewRpeot by Id", error);
+        }
+      }
+    };
+    fetchInterviewReport();
+  }, [id, detailsInfo, setDetailsInfo]);
+
+  const [activeTab, setActiveTab] = useState<
+    "technical" | "behavioral" | "roadmap"
+  >("technical");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -23,7 +52,7 @@ const InterviewReport = () => {
 
           <div className="text-right">
             <p className="text-sm font-semibold text-gray-900">
-              Backend Software Engineer
+              {detailsInfo?.title || "Backend Software Engineer"}
             </p>
 
             <p className="text-xs text-gray-500">InnovateTech · Remote</p>
@@ -41,35 +70,53 @@ const InterviewReport = () => {
             </p>
 
             {/* Active */}
-            <button className="mb-1 flex w-full items-center gap-3 rounded-lg bg-gray-100 px-4 py-3 text-left">
+            <button
+              onClick={() => setActiveTab("technical")}
+              className={`mb-1 flex w-full items-center gap-3 rounded-lg  px-4 py-3 text-left ${activeTab === "technical" ? "bg-gray-100" : "hover:bg-gray-50 "} `}
+            >
               <span className="text-sm">▣</span>
 
               <div>
                 <p className="text-sm font-semibold text-gray-900">Technical</p>
 
-                <p className="text-xs text-gray-500">7 questions</p>
+                <p className="text-xs text-gray-500">
+                  {detailsInfo?.technicalQuestions?.length ?? 0} questions
+                </p>
               </div>
             </button>
 
             {/* Behavioral */}
-            <button className="mb-1 flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left hover:bg-gray-50">
+            <button
+              onClick={() => setActiveTab("behavioral")}
+              className={`mb-1 flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left ${activeTab === "behavioral" ? "bg-gray-100" : "hover:bg-gray-50"} `}
+            >
               <span className="text-sm text-gray-500">◉</span>
 
               <div>
                 <p className="text-sm font-medium text-gray-700">Behavioral</p>
 
-                <p className="text-xs text-gray-400">4 questions</p>
+                <p className="text-xs text-gray-400">
+                  {detailsInfo?.behavioralQuestions?.length ?? 0} questions
+                </p>
               </div>
             </button>
 
             {/* Roadmap */}
-            <button className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left hover:bg-gray-50">
+            <button
+              onClick={() => setActiveTab("roadmap")}
+              className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left transition ${
+                activeTab === "roadmap" ? "bg-gray-100" : "hover:bg-gray-50"
+              }`}
+            >
               <span className="text-sm text-gray-500">□</span>
 
               <div>
                 <p className="text-sm font-medium text-gray-700">Roadmap</p>
 
-                <p className="text-xs text-gray-400">7 day plan</p>
+                <p className="text-xs text-gray-400">
+                  {" "}
+                  {detailsInfo?.preparationPlan?.length ?? 0}day plan
+                </p>
               </div>
             </button>
           </div>
@@ -77,92 +124,123 @@ const InterviewReport = () => {
 
         {/* MAIN SECTION */}
         <section className="col-span-6">
-          <div className="rounded-xl border border-gray-200 bg-white">
-            {/* Section Header */}
-            <div className="border-b border-gray-200 px-6 py-5">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Technical Questions
-              </h2>
+          {activeTab === "technical" && (
+            <div className="rounded-xl border border-gray-200 bg-white">
+              {/* Section Header */}
+              <div className="border-b border-gray-200 px-6 py-5">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Technical Questions
+                </h2>
 
-              <p className="mt-1 text-sm text-gray-500">
-                Questions designed to evaluate your technical readiness for this
-                role.
-              </p>
+                <p className="mt-1 text-sm text-gray-500">
+                  Questions designed to evaluate your technical readiness for
+                  this role.
+                </p>
+              </div>
+
+              {detailsInfo?.technicalQuestions?.map((elem, id) => (
+                <div key={id} className="border-b border-gray-200 px-6 py-6">
+                  <div className="mb-3 flex items-start gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
+                      {String(id + 1).padStart(2, "0")}
+                    </span>
+
+                    <h3 className="text-sm font-semibold leading-6 text-gray-900">
+                      {elem.question}
+                    </h3>
+                  </div>
+
+                  <div className="ml-10">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                      What this evaluates
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-gray-600">
+                      {elem.intention}
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-gray-600">
+                      {elem.answer}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
 
-            {/* Question 1 */}
-            <div className="border-b border-gray-200 px-6 py-6">
-              <div className="mb-3 flex items-start gap-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
-                  01
-                </span>
+          {activeTab === "behavioral" && (
+            <div className="rounded-xl border border-gray-200 bg-white">
+              {/* Section Header */}
+              <div className="border-b border-gray-200 px-6 py-5">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Behavioral Questions
+                </h2>
 
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  How do you implement connection pooling and handle connection
-                  failures in a Node.js application using PostgreSQL?
-                </h3>
-              </div>
-
-              <div className="ml-10">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                  What this evaluates
-                </p>
-
-                <p className="mt-2 text-sm leading-6 text-gray-600">
-                  Backend architectural knowledge and database management skills
-                  required for the role.
+                <p className="mt-1 text-sm text-gray-500">
+                  Questions to assess teamwork, problem solving, and cultural
+                  fit.
                 </p>
               </div>
+
+              {detailsInfo?.behavioralQuestions?.map((elem, id) => (
+                <div key={id} className="border-b border-gray-200 px-6 py-6">
+                  <div className="mb-3 flex items-start gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
+                      {String(id + 1).padStart(2, "0")}
+                    </span>
+
+                    <h3 className="text-sm font-semibold leading-6 text-gray-900">
+                      {elem.question}
+                    </h3>
+                  </div>
+
+                  <div className="ml-10">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                      What this evaluates
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-gray-600">
+                      {elem.intention}
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-gray-600">
+                      {elem.answer}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
 
-            {/* Question 2 */}
-            <div className="border-b border-gray-200 px-6 py-6">
-              <div className="mb-3 flex items-start gap-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
-                  02
-                </span>
+          {activeTab === "roadmap" && (
+            <div className="rounded-xl border border-gray-200 bg-white">
+              {/* Section Header */}
+              <div className="border-b border-gray-200 px-6 py-5">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Preparation Roadmap
+                </h2>
 
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Can you explain how the event loop in Node.js handles
-                  asynchronous operations and phases?
-                </h3>
-              </div>
-
-              <div className="ml-10">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                  What this evaluates
-                </p>
-
-                <p className="mt-2 text-sm leading-6 text-gray-600">
-                  Core understanding of Node.js asynchronous programming.
+                <p className="mt-1 text-sm text-gray-500">
+                  Daily plan tailored to cover your skill gaps.
                 </p>
               </div>
+
+              {detailsInfo?.preparationPlan?.map((plan) => (
+                <div
+                  key={plan.day}
+                  className="border-b border-gray-200 px-6 py-5 last:border-b-0"
+                >
+                  <span className="inline-block rounded bg-gray-900 px-2.5 py-1 text-xs font-semibold text-white">
+                    Day {plan.day}
+                  </span>
+                  <h4 className="mt-2 text-sm font-bold text-gray-900">
+                    {plan.focus}
+                  </h4>
+                  <ul className="mt-2 list-inside list-disc space-y-1 text-xs text-gray-600">
+                    {plan.tasks?.map((task, tIdx) => (
+                      <li key={tIdx}>{task}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
-
-            {/* Question 3 */}
-            <div className="px-6 py-6">
-              <div className="mb-3 flex items-start gap-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
-                  03
-                </span>
-
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  What strategies do you use to secure RESTful APIs against
-                  common vulnerabilities?
-                </h3>
-              </div>
-
-              <div className="ml-10">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                  What this evaluates
-                </p>
-
-                <p className="mt-2 text-sm leading-6 text-gray-600">
-                  Authentication, authorization, and API security practices.
-                </p>
-              </div>
-            </div>
-          </div>
+          )}
         </section>
 
         {/* RIGHT SIDEBAR */}
@@ -172,13 +250,18 @@ const InterviewReport = () => {
             <p className="text-sm font-semibold text-gray-900">Match Score</p>
 
             <div className="mt-5 text-center">
-              <p className="text-5xl font-bold text-gray-900">20%</p>
+              <p className="text-5xl font-bold text-gray-900">
+                {detailsInfo?.matchScore ?? 0} %
+              </p>
 
               <p className="mt-2 text-xs text-gray-500">Overall job match</p>
             </div>
 
             <div className="mt-5 h-2 overflow-hidden rounded-full bg-gray-100">
-              <div className="h-full w-[20%] rounded-full bg-gray-900"></div>
+              <div
+                className="h-full rounded-full bg-gray-900 transition-all duration-500"
+                style={{ width: `${detailsInfo?.matchScore ?? 0}%` }}
+              ></div>
             </div>
           </div>
 
@@ -189,69 +272,25 @@ const InterviewReport = () => {
                 Skill Gaps
               </h3>
 
-              <span className="text-xs text-gray-400">{0}gaps</span>
+              <span className="text-xs text-gray-400">
+                {detailsInfo?.skillGaps?.length ?? 0}gaps
+              </span>
             </div>
 
             <div className="mt-4 space-y-3">
-              <div className="rounded-lg border border-gray-200 p-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium text-gray-800">
-                    Professional Backend Experience
-                  </p>
+              {detailsInfo?.skillGaps?.map((elem, id) => (
+                <div key={id} className="rounded-lg border border-gray-200 p-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-medium text-gray-800">
+                      {elem.skill}
+                    </p>
 
-                  <span className="text-[10px] font-semibold uppercase text-gray-500">
-                    High
-                  </span>
+                    <span className="text-[10px] font-semibold uppercase text-gray-500">
+                      {elem.severity}
+                    </span>
+                  </div>
                 </div>
-              </div>
-
-              <div className="rounded-lg border border-gray-200 p-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium text-gray-800">
-                    Docker & Containerization
-                  </p>
-
-                  <span className="text-[10px] font-semibold uppercase text-gray-500">
-                    High
-                  </span>
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-gray-200 p-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium text-gray-800">
-                    Redis Caching
-                  </p>
-
-                  <span className="text-[10px] font-semibold uppercase text-gray-500">
-                    Medium
-                  </span>
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-gray-200 p-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium text-gray-800">
-                    Cloud Platforms
-                  </p>
-
-                  <span className="text-[10px] font-semibold uppercase text-gray-500">
-                    Medium
-                  </span>
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-gray-200 p-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium text-gray-800">
-                    CI/CD Pipelines
-                  </p>
-
-                  <span className="text-[10px] font-semibold uppercase text-gray-500">
-                    Medium
-                  </span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </aside>

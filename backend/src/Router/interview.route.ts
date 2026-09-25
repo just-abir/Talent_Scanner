@@ -12,4 +12,27 @@ interviewRouter.post(
   genarateInterviewController.genarateInterviewReport,
 );
 
+interviewRouter.get(
+  "/recent",
+  userMiddleware.authMiddleware,
+  genarateInterviewController.recentInterview,
+);
+interviewRouter.get(
+  "/generate-cv",
+  userMiddleware.authMiddleware,
+  genarateInterviewController.generateCustomCv,
+);
+
+interviewRouter.get(
+  "/:id",
+  userMiddleware.authMiddleware,
+  genarateInterviewController.genarateInterviewReportByID,
+);
+
+interviewRouter.get(
+  "/generate-cv",
+  userMiddleware.authMiddleware,
+  genarateInterviewController.generateCustomCv,
+);
+
 export default interviewRouter;
