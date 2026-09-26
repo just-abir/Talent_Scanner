@@ -29,8 +29,8 @@ interviewRouter.get(
   genarateInterviewController.genarateInterviewReportByID,
 );
 
-interviewRouter.get(
-  "/generate-cv",
+interviewRouter.post(
+  "/generate-cv/:id",
   userMiddleware.authMiddleware,
   genarateInterviewController.generateCustomCv,
 );

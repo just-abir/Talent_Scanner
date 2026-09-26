@@ -2,6 +2,7 @@ import { PDFParse } from "pdf-parse";
 import asyncHandler from "../Utils/asyncHandler.js";
 import type { Request, Response } from "express";
 import {
+  extractTextFromBuffer,
   generateInterviewReport,
   generateTailoredCV,
 } from "../Services/ai.services.js";
@@ -11,15 +12,26 @@ import { error } from "node:console";
 
 const genarateInterviewReport = asyncHandler(
   async (req: Request, res: Response) => {
-    const parser = new PDFParse({
-      data: req.file!.buffer,
-    });
+    if (!req.file) {
+      throw new Error("No resume file uploaded");
+    }
 
-    const resumeResult = await parser.getText();
+    let resumeContent = "";
+    const mimeType = req.file.mimetype;
 
-    const resumeContent = resumeResult.text;
-    console.log("Resuemcontext: ", resumeContent);
+    if (mimeType === "application/pdf") {
+      try {
+        const parser = new PDFParse({ data: req.file.buffer });
+        const resumeResult = await parser.getText();
+        resumeContent = resumeResult.text?.trim() || "";
+      } catch (err) {
+        console.warn("pdf-parse failed, falling back to Vision OCR", err);
+      }
+    }
 
+    if (!resumeContent || resumeContent.length < 50) {
+      resumeContent = await extractTextFromBuffer(req.file.buffer, mimeType);
+    }
     const { selfDescription, jobDescription } = req.body;
 
     if (!req.user) {
@@ -32,7 +44,14 @@ const genarateInterviewReport = asyncHandler(
       jobDescription,
     });
 
-    console.log("Aireport", interviewRerpotAi);
+    if (!interviewRerpotAi.isValidResume) {
+      return sendResponse(
+        res,
+        400,
+        interviewRerpotAi.rejectionReason ||
+          "Uploaded file is not a valid resume.",
+      );
+    }
 
     const interviewInDB = await interviewReportModel.create({
       user: req.user.id,
@@ -69,13 +88,27 @@ const recentInterview = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const generateCustomCv = asyncHandler(async (req: Request, res: Response) => {
-  const { resume, selfDescription, jobDescription } = req.body;
+  const { id } = req.params;
+  const report = await interviewReportModel.findById(id);
 
+  if (!report) {
+    throw new Error("Interview report not found");
+  }
+  if (!report.resume) {
+    throw new Error("Resume content not found for this report");
+  }
   const cvData = await generateTailoredCV({
-    resume,
-    selfDescription,
-    jobDescription,
+    resume: report.resume,
+    selfDescription: report.selfDescription || "",
+    jobDescription: report.jobDescription,
   });
+
+  res.set({
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `attachment; filename=resume_${id}.pdf`,
+  });
+
+  res.send(cvData);
 
   return sendResponse(res, 200, "CV generated succes", cvData);
 });

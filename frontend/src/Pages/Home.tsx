@@ -131,9 +131,12 @@ const Home = () => {
                   }}
                   id="resume"
                   type="file"
-                  accept=".pdf,application/pdf"
+                  accept=".pdf,application/pdf,image/png,image/jpeg,image/jpg,image/webp"
                   className="hidden"
                 />
+                <p className="mt-1 text-xs text-gray-400">
+                  PDF, PNG, JPG, or WEBP
+                </p>
               </div>
 
               {/* Self Description */}
