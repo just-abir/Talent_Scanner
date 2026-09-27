@@ -29,6 +29,12 @@ interviewRouter.get(
   genarateInterviewController.genarateInterviewReportByID,
 );
 
+interviewRouter.get(
+  "/download-report/:id",
+  userMiddleware.authMiddleware,
+  genarateInterviewController.downloadReportPDF,
+);
+
 interviewRouter.post(
   "/generate-cv/:id",
   userMiddleware.authMiddleware,

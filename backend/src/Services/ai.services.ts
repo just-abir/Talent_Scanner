@@ -290,3 +290,86 @@ export const extractTextFromBuffer = async (
 
   return response.text ?? "";
 };
+
+export const generateReportPDF = async (report: any) => {
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; line-height: 1.5; padding: 20px; }
+        h1 { color: #111827; font-size: 24px; border-bottom: 2px solid #4f46e5; padding-bottom: 8px; margin-bottom: 4px; }
+        .meta { color: #6b7280; font-size: 13px; margin-bottom: 25px; }
+        h2 { color: #3730a3; font-size: 18px; margin-top: 25px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+        .card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-bottom: 12px; page-break-inside: avoid; }
+        .q-title { font-weight: 700; color: #111827; font-size: 14px; margin-bottom: 6px; }
+        .intention { font-size: 12px; color: #4b5563; margin-bottom: 8px; font-style: italic; }
+        .answer { font-size: 12px; color: #1f2937; background: #ffffff; padding: 10px; border-left: 3px solid #4f46e5; border-radius: 4px; }
+        .day-badge { display: inline-block; background: #4f46e5; color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .focus { font-weight: 600; font-size: 14px; color: #1f2937; margin: 6px 0; }
+        ul { margin: 6px 0; padding-left: 20px; font-size: 12px; color: #374151; }
+        li { margin-bottom: 4px; }
+      </style>
+    </head>
+    <body>
+      <h1>${report.title || "Interview Preparation Guide"}</h1>
+      <div class="meta">
+        Target Role · Match Score: ${report.matchScore ?? 0}% · Generated on: ${new Date().toLocaleDateString()}
+      </div>
+
+      <!-- 1. TECHNICAL QUESTIONS -->
+      <h2>1. Technical Questions (${report.technicalQuestions?.length || 0})</h2>
+      ${
+        report.technicalQuestions
+          ?.map(
+            (q: any, i: number) => `
+        <div class="card">
+          <div class="q-title">Q${i + 1}: ${q.question}</div>
+          <div class="intention"><strong>Interviewer Intention:</strong> ${q.intention}</div>
+          <div class="answer"><strong>Suggested Answer / Approach:</strong><br/>${q.answer}</div>
+        </div>
+      `,
+          )
+          .join("") || "<p>None</p>"
+      }
+
+      <!-- 2. BEHAVIORAL QUESTIONS -->
+      <h2>2. Behavioral Questions (${report.behavioralQuestions?.length || 0})</h2>
+      ${
+        report.behavioralQuestions
+          ?.map(
+            (q: any, i: number) => `
+        <div class="card">
+          <div class="q-title">Q${i + 1}: ${q.question}</div>
+          <div class="intention"><strong>Interviewer Intention:</strong> ${q.intention}</div>
+          <div class="answer"><strong>Suggested Answer:</strong><br/>${q.answer}</div>
+        </div>
+      `,
+          )
+          .join("") || "<p>None</p>"
+      }
+
+      <!-- 3. ROADMAP / PREPARATION PLAN -->
+      <h2>3. Preparation Roadmap Plan (${report.preparationPlan?.length || 0} Days)</h2>
+      ${
+        report.preparationPlan
+          ?.map(
+            (p: any) => `
+        <div class="card">
+          <span class="day-badge">Day ${p.day}</span>
+          <div class="focus">${p.focus}</div>
+          <ul>
+            ${p.tasks?.map((t: string) => `<li>${t}</li>`).join("")}
+          </ul>
+        </div>
+      `,
+          )
+          .join("") || "<p>None</p>"
+      }
+    </body>
+    </html>
+  `;
+
+  return await generatePDF(html);
+};

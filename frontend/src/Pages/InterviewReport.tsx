@@ -1,7 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { interviewContext } from "../Context/interviewContext";
 import { useParams, Link } from "react-router-dom";
-import { getInterviewReportByID } from "../Api/interview.api";
+import {
+  getInterviewReportByID,
+  downloadTailoredCV,
+  downloadInterviewReportPDF,
+} from "../Api/interview.api";
 
 const InterviewReport = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,6 +36,60 @@ const InterviewReport = () => {
     "technical" | "behavioral" | "roadmap"
   >("technical");
 
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadCV = async () => {
+    if (!id) return;
+    try {
+      setIsDownloading(true);
+      const blobData = await downloadTailoredCV(id);
+
+      const url = window.URL.createObjectURL(
+        new Blob([blobData], { type: "application/pdf" }),
+      );
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Tailored_Resume_${id}.pdf`);
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download CV:", error);
+      alert("Could not generate CV. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
+
+  const handleDownloadReport = async () => {
+    if (!id) return;
+    try {
+      setIsDownloadingReport(true);
+      const blobData = await downloadInterviewReportPDF(id);
+
+      const url = window.URL.createObjectURL(
+        new Blob([blobData], { type: "application/pdf" }),
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Interview_Prep_Plan_${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download report PDF:", error);
+      alert("Could not download the interview guide. Please try again.");
+    } finally {
+      setIsDownloadingReport(false);
+    }
+  };
+
   const isInvalidResume = detailsInfo?.isValidResume === false;
 
   return (
@@ -52,7 +110,11 @@ const InterviewReport = () => {
             <p className="text-sm font-semibold text-gray-900">
               {detailsInfo?.title || "Backend Software Engineer"}
             </p>
-            <p className="text-xs text-gray-500">InnovateTech · Remote</p>
+            <p className="text-xs text-gray-500">
+              {detailsInfo?.createdAt
+                ? `Analyzed on ${new Date(detailsInfo.createdAt).toLocaleDateString()}`
+                : "Report Summary"}
+            </p>
           </div>
         </div>
       </header>
@@ -142,6 +204,28 @@ const InterviewReport = () => {
                 </p>
               </div>
             </button>
+
+            <div className="mt-4 flex flex-col gap-2">
+              {/* Tailored CV Download */}
+              <button
+                onClick={handleDownloadCV}
+                disabled={isDownloading || isInvalidResume}
+                className="w-full rounded-lg bg-green-600 px-4 py-2 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50 transition"
+              >
+                {isDownloading ? "Generating CV..." : "📄 Download Tailored CV"}
+              </button>
+
+              {/* Interview Prep Plan PDF Download */}
+              <button
+                onClick={handleDownloadReport}
+                disabled={isDownloadingReport || isInvalidResume}
+                className="w-full rounded-lg border border-indigo-600 bg-white px-4 py-2 text-xs font-semibold text-green-600 hover:bg-indigo-50 disabled:opacity-50 transition"
+              >
+                {isDownloadingReport
+                  ? "Generating Prep PDF..."
+                  : "📑 Download Prep Guide (PDF)"}
+              </button>
+            </div>
           </div>
         </aside>
 

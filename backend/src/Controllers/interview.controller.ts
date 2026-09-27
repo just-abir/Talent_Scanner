@@ -4,6 +4,7 @@ import type { Request, Response } from "express";
 import {
   extractTextFromBuffer,
   generateInterviewReport,
+  generateReportPDF,
   generateTailoredCV,
 } from "../Services/ai.services.js";
 import interviewReportModel from "../Model/interviewReport.model.js";
@@ -125,8 +126,24 @@ const generateCustomCv = asyncHandler(async (req: Request, res: Response) => {
   });
 
   res.send(cvData);
+});
 
-  return sendResponse(res, 200, "CV generated succes", cvData);
+const downloadReportPDF = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const report = await interviewReportModel.findById(id);
+
+  if (!report) {
+    throw new Error("Interview report not found");
+  }
+
+  const pdfBuffer = await generateReportPDF(report);
+
+  res.set({
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `attachment; filename=interview_prep_${id}.pdf`,
+  });
+
+  return res.send(pdfBuffer);
 });
 
 export const genarateInterviewController = {
@@ -134,4 +151,5 @@ export const genarateInterviewController = {
   genarateInterviewReportByID,
   recentInterview,
   generateCustomCv,
+  downloadReportPDF,
 };
