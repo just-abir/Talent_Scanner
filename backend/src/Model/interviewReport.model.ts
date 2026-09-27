@@ -24,7 +24,8 @@ interface InterviewReportSchema {
   resume?: string;
   selfDescription?: string;
   matchScore?: number;
-
+  isValidResume?: boolean;
+  rejectionReason?: string;
   technicalQuestions: QuestionSchema[];
   behavioralQuestions: QuestionSchema[];
   skillGaps: SkillSchema[];
@@ -126,6 +127,14 @@ const interviewReportSchema = new Schema<InterviewReportSchema>(
       type: Number,
       min: 0,
       max: 100,
+    },
+
+    isValidResume: {
+      type: Boolean,
+      default: true,
+    },
+    rejectionReason: {
+      type: String,
     },
 
     technicalQuestions: [technicalQuestionSchema],

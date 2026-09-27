@@ -45,11 +45,27 @@ const genarateInterviewReport = asyncHandler(
     });
 
     if (!interviewRerpotAi.isValidResume) {
+      const rejectedReportInDB = await interviewReportModel.create({
+        user: req.user.id,
+        resume: resumeContent,
+        selfDescription,
+        jobDescription,
+        isValidResume: false,
+        rejectionReason:
+          interviewRerpotAi.rejectionReason ||
+          "Uploaded file is not a valid resume.",
+        matchScore: 0,
+        title: "Invalid Resume Submitted",
+        technicalQuestions: [],
+        behavioralQuestions: [],
+        skillGaps: [],
+        preparationPlan: [],
+      });
       return sendResponse(
         res,
-        400,
-        interviewRerpotAi.rejectionReason ||
-          "Uploaded file is not a valid resume.",
+        201,
+        "Resume verification failed",
+        rejectedReportInDB,
       );
     }
 

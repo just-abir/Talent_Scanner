@@ -22,7 +22,8 @@ export interface PreparationPlanDay {
 export interface InterviewReportData {
   _id: string;
   title: string;
-
+  isValidResume?: boolean;
+  rejectionReason?: string;
   matchScore: number;
   technicalQuestions: Question[];
   behavioralQuestions: Question[];
