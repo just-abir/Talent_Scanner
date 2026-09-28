@@ -6,6 +6,8 @@ import Home from "./Pages/Home";
 import Hero from "./Pages/Hero";
 import { ProtectedRoute } from "./ProtectedRoute";
 import InterviewReport from "./Pages/InterviewReport";
+import Compare from "./Pages/Compare";
+import CompareReport from "./Pages/CompareReport";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/home" element={<Home />} />
           <Route path="/interview/:id" element={<InterviewReport />} />
+          <Route path="/compare" element={<Compare />} />
+          <Route path="/compare/:id" element={<CompareReport />} />
         </Route>
       </Routes>
     </div>

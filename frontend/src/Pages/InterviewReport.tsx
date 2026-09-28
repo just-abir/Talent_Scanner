@@ -212,7 +212,7 @@ const InterviewReport = () => {
                 disabled={isDownloading || isInvalidResume}
                 className="w-full rounded-lg bg-green-600 px-4 py-2 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50 transition"
               >
-                {isDownloading ? "Generating CV..." : "📄 Download Tailored CV"}
+                {isDownloading ? "Generating CV..." : "Download Tailored CV"}
               </button>
 
               {/* Interview Prep Plan PDF Download */}
@@ -223,7 +223,7 @@ const InterviewReport = () => {
               >
                 {isDownloadingReport
                   ? "Generating Prep PDF..."
-                  : "📑 Download Prep Guide (PDF)"}
+                  : "Download Prep Guide (PDF)"}
               </button>
             </div>
           </div>
@@ -405,7 +405,15 @@ const InterviewReport = () => {
 
             <div className="mt-5 text-center">
               <p
-                className={`text-5xl font-bold ${isInvalidResume ? "text-red-500" : "text-gray-900"}`}
+                className={`text-5xl font-bold ${
+                  isInvalidResume
+                    ? "text-red-500"
+                    : (detailsInfo?.matchScore ?? 0) >= 80
+                      ? "text-green-600"
+                      : (detailsInfo?.matchScore ?? 0) >= 60
+                        ? "text-yellow-600"
+                        : "text-red-600"
+                }`}
               >
                 {detailsInfo?.matchScore ?? 0} %
               </p>
@@ -414,12 +422,17 @@ const InterviewReport = () => {
               </p>
             </div>
 
-            <div className="mt-5 h-2 overflow-hidden rounded-full bg-gray-100">
+            <div className="mt-5 h-2 overflow-hidden rounded-full bg-gray-600">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
-                  isInvalidResume ? "bg-red-500" : "bg-gray-900"
+                  isInvalidResume
+                    ? "bg-red-500"
+                    : (detailsInfo?.matchScore ?? 0) >= 80
+                      ? "bg-green-600"
+                      : (detailsInfo?.matchScore ?? 0) >= 60
+                        ? "bg-yellow-500"
+                        : "bg-red-500"
                 }`}
-                style={{ width: `${detailsInfo?.matchScore ?? 0}%` }}
               ></div>
             </div>
           </div>
@@ -446,7 +459,15 @@ const InterviewReport = () => {
                       <p className="text-xs font-medium text-gray-800">
                         {elem.skill}
                       </p>
-                      <span className="text-[10px] font-semibold uppercase text-gray-500">
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                          elem.severity?.toLowerCase() === "high"
+                            ? "bg-red-100 text-red-700"
+                            : elem.severity?.toLowerCase() === "medium"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-green-100 text-green-700"
+                        }`}
+                      >
                         {elem.severity}
                       </span>
                     </div>

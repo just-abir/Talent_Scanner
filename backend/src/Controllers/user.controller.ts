@@ -46,7 +46,17 @@ const userRegister = asyncHandler(async (req: Request, res: Response) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  return sendResponse(res, 201, "User registerd successfully", newUser, {
+  const userData = {
+    id: newUser._id,
+    userName: newUser.userName,
+    email: newUser.email,
+    profileImage: newUser.profileImage,
+    role: newUser.role,
+    isVerified: newUser.isVerified,
+    isActive: newUser.isActive,
+  };
+
+  return sendResponse(res, 201, "User registerd successfully", userData, {
     token,
   });
 });
@@ -85,7 +95,17 @@ const userLogin = asyncHandler(async (req: Request, res: Response) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  return sendResponse(res, 200, "Login success", user);
+  const userData = {
+    id: user._id,
+    userName: user.userName,
+    email: user.email,
+    profileImage: user.profileImage,
+    role: user.role,
+    isVerified: user.isVerified,
+    isActive: user.isActive,
+  };
+
+  return sendResponse(res, 200, "Login success", userData);
 });
 
 /**
@@ -115,7 +135,9 @@ const getMe = asyncHandler(async (req: Request, res: Response) => {
     return sendResponse(res, 401, "Unauthorized");
   }
 
-  const user = await userModel.findById(req.user.id);
+  const user = await userModel
+    .findById(req.user.id)
+    .select("_id userName email profileImage role isVerified isActive");
 
   return sendResponse(res, 200, "use get succefulle fetchd", user);
 });

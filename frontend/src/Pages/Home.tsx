@@ -111,8 +111,20 @@ const Home = () => {
                   htmlFor="resume"
                   className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 px-5 py-8 text-center hover:bg-gray-50"
                 >
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 text-lg text-gray-600">
-                    ↑
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 text-gray-600">
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.8}
+                        d="M12 16V4m0 0L7 9m5-5 5 5M5 20h14"
+                      />
+                    </svg>
                   </div>
 
                   <p className="text-sm font-medium text-gray-800">
@@ -182,19 +194,60 @@ const Home = () => {
               </button>
             </div>
 
-            <div>
-              {recentValue?.map((elem, id) => (
-                <div
-                  onClick={() => {
-                    navigate(`/interview/${elem._id}`);
-                  }}
-                  className="border-2 "
-                  key={id}
-                >
-                  <p>{elem.createdAt ?? "NO Date"}</p>
-                  <p>{elem.title ?? "No title now"}</p>
+            <div className="col-span-1 border-t border-gray-200 p-7 lg:col-span-2">
+              <div className="mb-5">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Recent Interviews
+                </h2>
+
+                <p className="mt-1 text-sm text-gray-500">
+                  View your recently generated interview reports.
+                </p>
+              </div>
+
+              {recentValue.length === 0 ? (
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 text-center">
+                  <p className="text-sm text-gray-500">
+                    No recent interview reports found.
+                  </p>
                 </div>
-              ))}
+              ) : (
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  {recentValue.map((elem) => (
+                    <div
+                      key={elem._id}
+                      onClick={() => {
+                        navigate(`/interview/${elem._id}`);
+                      }}
+                      className="cursor-pointer rounded-lg border border-gray-200 bg-white p-3 transition hover:border-gray-400 hover:bg-gray-50"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="truncate text-sm font-semibold text-gray-900">
+                          {elem.title ?? "Untitled Interview"}
+                        </p>
+
+                        <span
+                          className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                            (elem.matchScore ?? 0) >= 80
+                              ? "bg-green-100 text-green-700"
+                              : (elem.matchScore ?? 0) >= 60
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {elem.matchScore ?? 0}% Match
+                        </span>
+                      </div>
+
+                      <p className="mt-1 text-xs text-gray-500">
+                        {elem.createdAt
+                          ? new Date(elem.createdAt).toLocaleDateString()
+                          : "No date"}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -292,84 +292,209 @@ export const extractTextFromBuffer = async (
 };
 
 export const generateReportPDF = async (report: any) => {
-  const html = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; line-height: 1.5; padding: 20px; }
-        h1 { color: #111827; font-size: 24px; border-bottom: 2px solid #4f46e5; padding-bottom: 8px; margin-bottom: 4px; }
-        .meta { color: #6b7280; font-size: 13px; margin-bottom: 25px; }
-        h2 { color: #3730a3; font-size: 18px; margin-top: 25px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
-        .card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-bottom: 12px; page-break-inside: avoid; }
-        .q-title { font-weight: 700; color: #111827; font-size: 14px; margin-bottom: 6px; }
-        .intention { font-size: 12px; color: #4b5563; margin-bottom: 8px; font-style: italic; }
-        .answer { font-size: 12px; color: #1f2937; background: #ffffff; padding: 10px; border-left: 3px solid #4f46e5; border-radius: 4px; }
-        .day-badge { display: inline-block; background: #4f46e5; color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-        .focus { font-weight: 600; font-size: 14px; color: #1f2937; margin: 6px 0; }
-        ul { margin: 6px 0; padding-left: 20px; font-size: 12px; color: #374151; }
-        li { margin-bottom: 4px; }
-      </style>
-    </head>
-    <body>
-      <h1>${report.title || "Interview Preparation Guide"}</h1>
-      <div class="meta">
-        Target Role · Match Score: ${report.matchScore ?? 0}% · Generated on: ${new Date().toLocaleDateString()}
-      </div>
+  const html = ` 
+    <!DOCTYPE html> 
+    <html lang="en"> 
+    <head> 
+      <meta charset="UTF-8"> 
+      <style> 
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; line-height: 1.5; padding: 20px; } 
+        h1 { color: #111827; font-size: 24px; border-bottom: 2px solid #111827; padding-bottom: 8px; margin-bottom: 4px; } 
+        .meta { color: #6b7280; font-size: 13px; margin-bottom: 25px; } 
+        h2 { color: #111827; font-size: 18px; margin-top: 25px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; } 
+        .card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-bottom: 12px; page-break-inside: avoid; } 
+        .q-title { font-weight: 700; color: #111827; font-size: 14px; margin-bottom: 6px; } 
+        .intention { font-size: 12px; color: #4b5563; margin-bottom: 8px; font-style: italic; } 
+        .answer { font-size: 12px; color: #1f2937; background: #ffffff; padding: 10px; border-left: 3px solid #111827; border-radius: 4px; } 
+        .day-badge { display: inline-block; background: #000000; color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; } 
+        .focus { font-weight: 600; font-size: 14px; color: #1f2937; margin: 6px 0; } 
+        ul { margin: 6px 0; padding-left: 20px; font-size: 12px; color: #374151; } 
+        li { margin-bottom: 4px; } 
+      </style> 
+    </head> 
+    <body> 
+      <h1>${report.title || "Interview Preparation Guide"}</h1> 
+      <div class="meta"> 
+        Target Role · Match Score: ${report.matchScore ?? 0}% · Generated on: ${new Date().toLocaleDateString()} 
+      </div> 
 
-      <!-- 1. TECHNICAL QUESTIONS -->
-      <h2>1. Technical Questions (${report.technicalQuestions?.length || 0})</h2>
+      <!-- 1. TECHNICAL QUESTIONS --> 
+      <h2>1. Technical Questions (${report.technicalQuestions?.length || 0})</h2> 
       ${
         report.technicalQuestions
           ?.map(
-            (q: any, i: number) => `
-        <div class="card">
-          <div class="q-title">Q${i + 1}: ${q.question}</div>
-          <div class="intention"><strong>Interviewer Intention:</strong> ${q.intention}</div>
-          <div class="answer"><strong>Suggested Answer / Approach:</strong><br/>${q.answer}</div>
-        </div>
+            (q: any, i: number) => ` 
+        <div class="card"> 
+          <div class="q-title">Q${i + 1}:${q.question}</div> 
+          <div class="intention"><strong>Interviewer Intention:</strong> ${q.intention}</div> 
+          <div class="answer"><strong>Suggested Answer / Approach:</strong><br/>${q.answer}</div> 
+        </div> 
       `,
           )
           .join("") || "<p>None</p>"
-      }
+      } 
 
-      <!-- 2. BEHAVIORAL QUESTIONS -->
-      <h2>2. Behavioral Questions (${report.behavioralQuestions?.length || 0})</h2>
+      <!-- 2. BEHAVIORAL QUESTIONS --> 
+      <h2>2. Behavioral Questions (${report.behavioralQuestions?.length || 0})</h2> 
       ${
         report.behavioralQuestions
           ?.map(
-            (q: any, i: number) => `
-        <div class="card">
-          <div class="q-title">Q${i + 1}: ${q.question}</div>
-          <div class="intention"><strong>Interviewer Intention:</strong> ${q.intention}</div>
-          <div class="answer"><strong>Suggested Answer:</strong><br/>${q.answer}</div>
-        </div>
+            (q: any, i: number) => ` 
+        <div class="card"> 
+          <div class="q-title">Q${i + 1}:${q.question}</div> 
+          <div class="intention"><strong>Interviewer Intention:</strong> ${q.intention}</div> 
+          <div class="answer"><strong>Suggested Answer:</strong><br/>${q.answer}</div> 
+        </div> 
       `,
           )
           .join("") || "<p>None</p>"
-      }
+      } 
 
-      <!-- 3. ROADMAP / PREPARATION PLAN -->
-      <h2>3. Preparation Roadmap Plan (${report.preparationPlan?.length || 0} Days)</h2>
+      <!-- 3. ROADMAP / PREPARATION PLAN --> 
+      <h2>3. Preparation Roadmap Plan (${report.preparationPlan?.length || 0} Days)</h2> 
       ${
         report.preparationPlan
           ?.map(
-            (p: any) => `
-        <div class="card">
-          <span class="day-badge">Day ${p.day}</span>
-          <div class="focus">${p.focus}</div>
-          <ul>
-            ${p.tasks?.map((t: string) => `<li>${t}</li>`).join("")}
-          </ul>
-        </div>
+            (p: any) => ` 
+        <div class="card"> 
+          <span class="day-badge">Day ${p.day}</span> 
+          <div class="focus">${p.focus}</div> 
+          <ul> 
+            ${p.tasks?.map((t: string) => `<li>${t}</li>`).join("")} 
+          </ul> 
+        </div> 
       `,
           )
           .join("") || "<p>None</p>"
-      }
-    </body>
-    </html>
+      } 
+    </body> 
+    </html> 
   `;
 
   return await generatePDF(html);
+};
+
+//Featrue for Multiple cv upload
+
+// 1. Schema for evaluating a single candidate
+const singleCandidateEvaluationSchema = z.object({
+  candidateName: z
+    .string()
+    .describe(
+      "Extracted candidate full name from resume, or 'Unknown Candidate'",
+    ),
+  matchScore: z
+    .number()
+    .min(0)
+    .max(100)
+    .describe(
+      "Realistic match score from 0 to 100 matching the Job Description",
+    ),
+  summary: z
+    .string()
+    .describe("A 2-3 sentence summary of candidate profile and qualification"),
+  keyStrengths: z
+    .array(z.string())
+    .describe("Top 3-5 technical or professional strengths matching the job"),
+  skillGaps: z
+    .array(z.string())
+    .describe("Key skills or experiences required by the job that are missing"),
+  recommendationTier: z
+    .enum(["Strong Fit", "Potential Fit", "Not Recommended"])
+    .describe("Recruiter recommendation tier based on score"),
+});
+
+// 2. Schema for Top Pick executive summary
+const topPickSummarySchema = z.object({
+  topCandidateName: z.string().describe("The name of the winning candidate"),
+  reasoning: z
+    .string()
+    .describe(
+      "A 2-3 sentence executive explanation highlighting why this candidate was chosen as #1 over the others",
+    ),
+});
+
+// 3. AI Service: Evaluate 1 Candidate
+export const evaluateCandidateCV = async ({
+  resume,
+  jobDescription,
+  selfDescription,
+  fileName,
+}: {
+  resume: string;
+  jobDescription: string;
+  selfDescription?: string;
+  fileName?: string;
+}) => {
+  const prompt = `You are an expert technical recruiter. Evaluate this individual candidate's resume strictly against the target Job Description and Recruiter Notes.
+
+Fallback Candidate Name / Filename: "${fileName || "Unknown"}"
+
+Candidate Resume Content:
+"""
+${resume}
+"""
+
+Target Job Description:
+"""
+${jobDescription}
+"""
+
+Recruiter Notes / Self Description:
+"""
+${selfDescription || "None provided"}
+"""
+
+Instructions:
+- Extract the candidate's real name if present, otherwise use "${fileName || "Unknown"}".
+- Score objectively between 0 and 100 based strictly on verified skills in the resume.
+- List 3 to 5 real strengths and identify missing skill gaps.
+- Choose "Strong Fit" (score 80+), "Potential Fit" (score 55-79), or "Not Recommended" (score < 55).`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3.5-flash-lite",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: zodToJsonSchema(singleCandidateEvaluationSchema),
+    },
+  });
+
+  return JSON.parse(response.text ?? "{}");
+};
+
+// 4. AI Service: Generate Final Top Pick Summary
+export const generateComparisonSummary = async ({
+  jobDescription,
+  topCandidates,
+}: {
+  jobDescription: string;
+  topCandidates: Array<{
+    candidateName: string;
+    matchScore: number;
+    summary: string;
+    keyStrengths: string[];
+  }>;
+}) => {
+  const prompt = `You are a Lead Recruiter reviewing ranked candidate evaluations.
+Job Description:
+"""
+${jobDescription}
+"""
+
+Ranked Candidates:
+${JSON.stringify(topCandidates, null, 2)}
+
+Provide the winning candidate's name and write a compelling 2-3 sentence executive summary explaining why they are the best fit among all evaluated candidates.`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3.5-flash-lite",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: zodToJsonSchema(topPickSummarySchema),
+    },
+  });
+
+  return JSON.parse(response.text ?? "{}");
 };
