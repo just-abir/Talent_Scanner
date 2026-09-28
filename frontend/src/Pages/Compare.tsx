@@ -30,8 +30,24 @@ const Compare = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      setFiles(selectedFiles);
+
+      setFiles((prevFiles) => {
+        const existingNames = new Set(prevFiles.map((file) => file.name));
+
+        const newFiles = selectedFiles.filter(
+          (file) => !existingNames.has(file.name),
+        );
+
+        return [...prevFiles, ...newFiles];
+      });
+
+      // Allow selecting the same file again after removing it
+      e.target.value = "";
     }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -229,6 +245,9 @@ const Compare = () => {
                   <p className="mt-1 text-xs text-gray-500">
                     PDF files only · Minimum 2 candidates
                   </p>
+                  <p className="mt-1 text-xs text-red-600">
+                    This may take a few moments
+                  </p>
 
                   <input
                     id="resume-upload"
@@ -272,6 +291,16 @@ const Compare = () => {
                               {(f.size / 1024 / 1024).toFixed(2)} MB
                             </p>
                           </div>
+
+                          {/* Remove file */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveFile(i)}
+                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-red-600"
+                            aria-label={`Remove ${f.name}`}
+                          >
+                            ×
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -290,6 +319,10 @@ const Compare = () => {
                 <p className="text-sm text-gray-500">
                   Make sure your job requirements and candidate CVs are ready
                   before starting the AI comparison.
+                </p>
+                <p className="mt-2 text-xs text-amber-600">
+                  AI analysis may take a few moments depending on the number of
+                  candidates. Please keep this page open.
                 </p>
               </div>
 
@@ -341,13 +374,16 @@ const Compare = () => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-semibold text-gray-900">
-                      {comparison.topPick?.candidateName ?? "Top Candidate"}
+                    <p className="text-xs font-semibold ">
+                      Selected:{" "}
+                      <span className="text-green-600">
+                        {" "}
+                        {comparison.topPick?.candidateName ??
+                          "Top Candidate"}{" "}
+                      </span>
                     </p>
 
-                    <p className="text-[11px] text-green-600 font-medium">
-                      {comparison.topPick?.matchScore ?? 0}% Match
-                    </p>
+                    <p className="text-[11px] text-center font-medium">View </p>
                   </div>
                 </button>
               ))}

@@ -22,12 +22,13 @@ const Home = () => {
 
   const [selfDescription, setSelfDescription] = useState<string>("");
   const [recentValue, setRecentValue] = useState<InterviewReportData[]>([]);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const handleSubmit = async () => {
     if (!resume) {
       alert("Please upload your resume");
       return;
     }
+    setLoading(true);
     const formData = new FormData();
 
     formData.append("resume", resume);
@@ -41,6 +42,8 @@ const Home = () => {
       navigate(`/interview/${response.data._id}`);
     } catch (error) {
       console.log("eror interview", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,41 +103,95 @@ const Home = () => {
 
             {/* Right Side */}
             <div className="p-7">
-              {/* Upload Resume */}
+              {/* Upload Resume Section */}
               <div className="mb-6">
-                <label className="mb-2 block text-sm font-semibold text-gray-900">
-                  Upload Resume
-                </label>
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="text-sm font-semibold text-gray-900">
+                    Upload Resume
+                  </label>
+                  {/* File Count Label (Jokhsn file thakbe) */}
+                  {resume && (
+                    <span className="text-xs font-medium text-gray-500">
+                      1 file
+                    </span>
+                  )}
+                </div>
 
-                {/* Upload Box */}
-                <label
-                  htmlFor="resume"
-                  className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 px-5 py-8 text-center hover:bg-gray-50"
-                >
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 text-gray-600">
-                    <svg
-                      className="h-5 w-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                {!resume ? (
+                  /* 1. NO FILE SELECTED: SHOW UPLOAD DROPZONE */
+                  <label
+                    htmlFor="resume"
+                    className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 px-5 py-8 text-center hover:bg-gray-50 transition"
+                  >
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 text-gray-600">
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.8}
+                          d="M12 16V4m0 0L7 9m5-5 5 5M5 20h14"
+                        />
+                      </svg>
+                    </div>
+
+                    <p className="text-sm font-medium text-gray-800">
+                      Choose your resume
+                    </p>
+
+                    <p className="mt-1 text-xs text-gray-400">PDF files only</p>
+                  </label>
+                ) : (
+                  /* 2. FILE SELECTED: SHOW PREVIEW CARD WITH X SIGN */
+                  <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-3.5 shadow-sm">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      {/* File Extension Badge (PDF/PNG/JPG) */}
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black text-[11px] font-bold text-white uppercase">
+                        {resume.name.split(".").pop() || "PDF"}
+                      </div>
+
+                      {/* File Name & Size */}
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-gray-900">
+                          {resume.name}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {resume.size < 1024 * 1024
+                            ? `${(resume.size / 1024).toFixed(1)} KB`
+                            : `${(resume.size / (1024 * 1024)).toFixed(2)} MB`}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Remove / Cross (X) Button */}
+                    <button
+                      type="button"
+                      onClick={() => setResume(null)}
+                      className="ml-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition cursor-pointer"
+                      title="Remove file"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.8}
-                        d="M12 16V4m0 0L7 9m5-5 5 5M5 20h14"
-                      />
-                    </svg>
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
                   </div>
+                )}
 
-                  <p className="text-sm font-medium text-gray-800">
-                    Choose your resume
-                  </p>
-
-                  <p className="mt-1 text-xs text-gray-400">PDF files only</p>
-                </label>
-
-                {/* File Input */}
+                {/* Hidden File Input */}
                 <input
                   name="resume"
                   onChange={(e) => {
@@ -146,7 +203,7 @@ const Home = () => {
                   accept=".pdf,application/pdf,image/png,image/jpeg,image/jpg,image/webp"
                   className="hidden"
                 />
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1.5 text-xs text-gray-400">
                   PDF, PNG, JPG, or WEBP
                 </p>
               </div>
@@ -187,10 +244,21 @@ const Home = () => {
               {/* Generate Button */}
               <button
                 onClick={handleSubmit}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-900 px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+                disabled={loading}
+                className={`flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold text-white transition ${
+                  loading
+                    ? "bg-gray-700 cursor-not-allowed opacity-90"
+                    : "bg-gray-900 hover:bg-gray-800 cursor-pointer"
+                }`}
               >
-                Generate Interview Report
-                <span className="text-base">→</span>
+                {loading ? (
+                  <span>Generating report....</span>
+                ) : (
+                  <>
+                    <span>Generate Interview Report</span>
+                    <span className="text-base">→</span>
+                  </>
+                )}
               </button>
             </div>
 
