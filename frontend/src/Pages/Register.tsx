@@ -2,6 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { registerUser } from "../Api/user.api";
 import { useNavigate } from "react-router-dom";
+import registerPic from "../assets/register.webp";
 
 export type registerForm = {
   userName: string;
@@ -36,7 +37,7 @@ const Register = () => {
           <div className="text-center">
             {/* Replace this with your actual image */}
             <img
-              src="/register-illustration.png"
+              src={registerPic}
               alt="Create account"
               className="w-full max-w-sm mx-auto"
             />
@@ -46,7 +47,8 @@ const Register = () => {
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-gray-500 max-w-sm mx-auto">
-              Create your account and start preparing for your next interview.
+              Join TalentScanner to analyze your skills and prepare with
+              personalized insights.
             </p>
           </div>
         </div>

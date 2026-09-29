@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { getMe, loginUser } from "../Api/user.api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import Talent_Scanner from "../assets/Talent_Scanner.jpg";
 export type loginForm = {
   email: string;
   password: string;
@@ -38,7 +39,7 @@ const Login = () => {
         <div className="hidden md:flex items-center justify-center bg-gray-100 p-10">
           <div className="text-center">
             <img
-              src="/login-illustration.png"
+              src={Talent_Scanner}
               alt="Login"
               className="w-full max-w-sm mx-auto"
             />
@@ -48,7 +49,8 @@ const Login = () => {
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-gray-500 max-w-sm mx-auto">
-              Sign in to continue your interview preparation journey.
+              Get personalized insights, sharpen your skills, and move closer to
+              your next opportunity.
             </p>
           </div>
         </div>
