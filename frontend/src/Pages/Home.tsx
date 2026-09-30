@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getRecentReport, uploadInformation } from "../Api/interview.api";
 import { useNavigate } from "react-router-dom";
 import {
@@ -51,9 +51,9 @@ const Home = () => {
     const recentReportShow = async () => {
       try {
         const response = await getRecentReport();
-        console.log("tHe Low back", response);
+
         const result = response.data;
-        console.log("Rcent value Test", result);
+
         setRecentValue(result || []);
       } catch (error) {
         console.log("recentshow error", error);

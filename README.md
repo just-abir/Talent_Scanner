@@ -1,8 +1,12 @@
 # 🎯 Talent Scanner
 
-> **AI-Powered CV Analysis, Interview Preparation & Candidate Comparison Platform**
+A full-stack AI-powered platform for **CV analysis, interview preparation, and candidate comparison**. Built with **Node.js/Express** on the backend and **React + TypeScript** on the frontend, powered by **Google Gemini AI**.
 
-Talent Scanner is a full-stack web application that uses **Google Gemini AI** to help candidates prepare smarter for job interviews and help recruiters rank and compare multiple CVs instantly.
+---
+
+## Overview
+
+This platform lets users upload CVs and analyze them against job descriptions to identify **match scores, skill gaps, technical and behavioral interview questions, and personalized preparation plans**. Recruiters can also compare multiple CVs and get AI-powered candidate insights, while users can generate **ATS-optimized CVs and downloadable PDF reports**.
 
 ---
 

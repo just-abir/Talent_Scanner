@@ -1,19 +1,5 @@
 import React, { useState } from "react";
-import {
-  FileText,
-  Users,
-  CheckCircle2,
-  ArrowRight,
-  Upload,
-  Award,
-  Sparkles,
-  Target,
-  BarChart3,
-  ListOrdered,
-  ChevronRight,
-  UserCheck,
-  AlertCircle,
-} from "lucide-react";
+import { CheckCircle2, ArrowRight, Sparkles, ChevronRight } from "lucide-react";
 
 export const Hero: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"candidate" | "recruiter">(

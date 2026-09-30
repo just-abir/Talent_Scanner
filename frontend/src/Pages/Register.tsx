@@ -1,4 +1,3 @@
-import React from "react";
 import { useForm } from "react-hook-form";
 import { registerUser } from "../Api/user.api";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +21,7 @@ const Register = () => {
   const onSubmit = async (data: registerForm) => {
     try {
       const response = await registerUser(data);
-      console.log("Response", response);
+
       navigate("/home");
     } catch (error) {
       console.log("hi", error);

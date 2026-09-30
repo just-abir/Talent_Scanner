@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { interviewContext } from "../Context/interviewContext";
 import { useParams, Link } from "react-router-dom";
 import {
