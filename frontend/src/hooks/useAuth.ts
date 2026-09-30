@@ -8,7 +8,5 @@ export const useAuth = () => {
     throw new Error("useAUth context isseue");
   }
 
-  console.log("tesing usercontext ", userContext);
-
   return userContext;
 };
