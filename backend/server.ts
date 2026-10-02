@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 // } from "./src/Services/ai.services.js";
 import app from "./src/app.js";
 import connectDB from "./src/Database/db.js";
-
 dotenv.config();
 
 connectDB();
