@@ -20,7 +20,7 @@ const Register = () => {
 
   const onSubmit = async (data: registerForm) => {
     try {
-      const response = await registerUser(data);
+      await registerUser(data);
 
       navigate("/home");
     } catch (error) {
