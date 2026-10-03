@@ -3,6 +3,7 @@ import { getMe, loginUser } from "../Api/user.api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import Talent_Scanner from "../assets/Talent_Scanner.jpg";
+import { useState } from "react";
 export type loginForm = {
   email: string;
   password: string;
@@ -10,6 +11,7 @@ export type loginForm = {
 
 const Login = () => {
   const { setUser } = useAuth();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const {
     register,
@@ -19,6 +21,7 @@ const Login = () => {
 
   const onSubmit = async (data: loginForm) => {
     try {
+      setLoading(true);
       await loginUser(data);
 
       const reponse2 = await getMe();
@@ -27,6 +30,8 @@ const Login = () => {
       navigate("/home");
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,11 +99,12 @@ const Login = () => {
             </div>
 
             {/* Login Button */}
+
             <button
               type="submit"
               className="w-full rounded-lg bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
             >
-              Login
+              {loading ? "Login..." : "Login"}
             </button>
           </form>
 

@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { registerUser } from "../Api/user.api";
 import { useNavigate } from "react-router-dom";
 import registerPic from "../assets/register.webp";
+import { useState } from "react";
 
 export type registerForm = {
   userName: string;
@@ -18,13 +19,18 @@ const Register = () => {
     formState: { errors },
   } = useForm<registerForm>();
 
+  const [loading, setLoading] = useState(false);
+
   const onSubmit = async (data: registerForm) => {
     try {
+      setLoading(true);
       await registerUser(data);
 
       navigate("/home");
     } catch (error) {
       console.log("hi", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,9 +83,6 @@ const Register = () => {
                     value: 3,
                     message: "Username must be at least 3 characters",
                   },
-                  onBlur: (e) => {
-                    console.log("typing:", e.target.value);
-                  },
                 })}
                 type="text"
                 placeholder="Enter username"
@@ -126,7 +129,7 @@ const Register = () => {
               type="submit"
               className="w-full rounded-lg bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
             >
-              Register
+              {loading ? "Register..." : "Register"}
             </button>
           </form>
 
