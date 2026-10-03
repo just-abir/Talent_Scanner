@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
-import { registerUser } from "../Api/user.api";
+import { registerUser, getMe } from "../Api/user.api";
 import { useNavigate } from "react-router-dom";
 import registerPic from "../assets/register.webp";
 import { useState } from "react";
-
+import { useAuth } from "../hooks/useAuth";
 export type registerForm = {
   userName: string;
   email: string;
@@ -12,6 +12,7 @@ export type registerForm = {
 
 const Register = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const {
     register,
@@ -20,15 +21,22 @@ const Register = () => {
   } = useForm<registerForm>();
 
   const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const onSubmit = async (data: registerForm) => {
     try {
       setLoading(true);
+      setServerError(null);
       await registerUser(data);
-
+      const me = await getMe();
+      setUser(me.data);
       navigate("/home");
-    } catch (error) {
+    } catch (error: any) {
       console.log("hi", error);
+      setServerError(
+        error?.response?.data?.message ||
+          "Registration failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -127,10 +135,18 @@ const Register = () => {
             {/* Register Button */}
             <button
               type="submit"
-              className="w-full rounded-lg bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+              disabled={loading}
+              className="w-full rounded-lg bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-60"
             >
               {loading ? "Register..." : "Register"}
             </button>
+
+            {/* Warning / Error Message */}
+            {serverError && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-2.5 text-center text-xs font-medium text-red-600">
+                {serverError}
+              </div>
+            )}
           </form>
 
           {/* Login Link */}

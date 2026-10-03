@@ -12,6 +12,7 @@ export type loginForm = {
 const Login = () => {
   const { setUser } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
   const {
     register,
@@ -22,14 +23,18 @@ const Login = () => {
   const onSubmit = async (data: loginForm) => {
     try {
       setLoading(true);
+      setServerError(null);
       await loginUser(data);
 
       const reponse2 = await getMe();
 
       setUser(reponse2.data);
       navigate("/home");
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      setServerError(
+        error?.response?.data?.message || "Invalid email or password",
+      );
     } finally {
       setLoading(false);
     }
@@ -102,10 +107,18 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full rounded-lg bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+              disabled={loading}
+              className="w-full rounded-lg bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-60"
             >
               {loading ? "Login..." : "Login"}
             </button>
+
+            {/* Warning / Error Message */}
+            {serverError && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-2.5 text-center text-xs font-medium text-red-600">
+                {serverError}
+              </div>
+            )}
           </form>
 
           {/* Register Link */}

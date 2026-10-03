@@ -13,7 +13,7 @@ function App() {
   const location = useLocation();
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 antialiased  overflow-x-hidden">
-      {location.pathname !== "/" && <Navbar />}
+      {!["/", "/login", "/register"].includes(location.pathname) && <Navbar />}
 
       <main className="flex-1">
         <Routes>

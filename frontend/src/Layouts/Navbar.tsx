@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { logoutUser } from "../Api/user.api";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FileText,
@@ -20,11 +21,16 @@ const Navbar = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    setIsOpen(false);
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.log("Logout error", error);
+    } finally {
+      setUser(null);
+      setIsOpen(false);
+      navigate("/login");
+    }
   };
 
   return (

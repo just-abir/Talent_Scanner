@@ -12,10 +12,10 @@ export const loginUser = async (data: loginForm) => {
   return response.data;
 };
 
-// export const userLogout =asyn()=>{
-//     const response = await api.post("/user/logout", data);
-//   return response.data;
-// }
+export const logoutUser = async () => {
+  const response = await api.get("/user/logout");
+  return response.data;
+};
 
 export const getMe = async () => {
   const response = await api.get("/user/getMe");
