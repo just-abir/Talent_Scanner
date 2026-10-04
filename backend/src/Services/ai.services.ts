@@ -2,7 +2,8 @@ import "dotenv/config";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
 const interviewReportSchema = z.object({
@@ -191,7 +192,11 @@ Evaluation Guidelines:
 };
 
 const generatePDF = async (htmlContent: string) => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
+  });
 
   try {
     const page = await browser.newPage();
